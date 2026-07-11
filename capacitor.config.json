@@ -1,0 +1,13 @@
+{
+  "appId": "app.sansui.ink",
+  "appName": "山水",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#f5f1e8"
+  }
+}

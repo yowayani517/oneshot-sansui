@@ -1,0 +1,414 @@
+.sumi-game {
+  --paper: #f5f1e8;
+  --sumi: #3a3a42;
+  --ai: #2a5a8f;
+  --shu: #d45a4e;
+  --matsuba: #4a8568;
+  --line: rgba(26, 26, 31, 0.18);
+
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--paper);
+  color: var(--sumi);
+  font-family: "Yuji Mai", "Yuji Syuku", "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  overflow: hidden;
+}
+
+.sumi-game__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.sumi-game__canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sumi-title {
+  position: fixed;
+  top: 28px;
+  left: 26px;
+  z-index: 5;
+  pointer-events: none;
+  writing-mode: vertical-rl;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.sumi-title h1 {
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  color: var(--sumi);
+}
+
+.sumi-title__sub {
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  color: rgba(26, 26, 31, 0.55);
+  padding-top: 6px;
+}
+
+.sumi-title::after {
+  content: "";
+  display: block;
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(to bottom, var(--line), transparent);
+  margin-right: 2px;
+}
+
+.sumi-back {
+  position: fixed;
+  top: 28px;
+  right: 26px;
+  z-index: 6;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(239, 234, 224, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: rgba(26, 26, 31, 0.78);
+  cursor: pointer;
+  transition:
+    color 0.25s,
+    border-color 0.25s,
+    background 0.25s;
+}
+
+.sumi-back:hover {
+  color: var(--sumi);
+  border-color: rgba(26, 26, 31, 0.4);
+  background: rgba(239, 234, 224, 0.92);
+}
+
+.sumi-hint {
+  position: fixed;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  color: rgba(26, 26, 31, 0.5);
+  transition: opacity 1.6s ease;
+}
+
+.sumi-hint.gone {
+  opacity: 0;
+}
+
+.sumi-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 22px;
+  background: rgba(239, 234, 224, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.sumi-inks {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sumi-ink {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 1px 3px rgba(26, 26, 31, 0.25);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+.sumi-ink:hover {
+  transform: scale(1.18);
+}
+
+.sumi-ink::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  transition: border-color 0.25s ease;
+}
+
+.sumi-ink[aria-pressed="true"]::after {
+  border-color: rgba(26, 26, 31, 0.55);
+}
+
+.sumi-ink__lbl {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(26, 26, 31, 0.6);
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.sumi-ink:hover .sumi-ink__lbl,
+.sumi-ink[aria-pressed="true"] .sumi-ink__lbl {
+  opacity: 1;
+}
+
+.ink-cycle {
+  background: conic-gradient(
+    var(--sumi),
+    var(--ai),
+    var(--matsuba),
+    var(--shu),
+    var(--sumi)
+  );
+}
+.ink-sumi {
+  background: radial-gradient(circle at 35% 30%, #3a3a42, var(--sumi));
+}
+.ink-ai {
+  background: radial-gradient(circle at 35% 30%, #2c62ab, var(--ai));
+}
+.ink-shu {
+  background: radial-gradient(circle at 35% 30%, #e25a4c, var(--shu));
+}
+.ink-matsuba {
+  background: radial-gradient(circle at 35% 30%, #4c9374, var(--matsuba));
+}
+
+.sumi-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--line);
+}
+
+.sumi-act {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: rgba(26, 26, 31, 0.78);
+  padding: 4px 2px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.sumi-act::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -2px;
+  height: 1px;
+  background: var(--sumi);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.sumi-act:hover::after {
+  transform: scaleX(1);
+}
+
+.sumi-act[aria-pressed="false"] {
+  color: rgba(26, 26, 31, 0.38);
+}
+
+.sumi-act__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--ai);
+  box-shadow: 0 0 6px rgba(22, 64, 122, 0.5);
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+}
+
+.sumi-act[aria-pressed="false"] .sumi-act__dot {
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid rgba(26, 26, 31, 0.35);
+}
+
+.sumi-act--primary {
+  color: var(--shu);
+  font-weight: 700;
+}
+
+.sumi-act--primary::after {
+  background: var(--shu);
+}
+
+.sumi-dock--finish {
+  gap: 18px;
+}
+
+.sumi-dock__note {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(26, 26, 31, 0.5);
+}
+
+.sumi-hint--persist {
+  opacity: 1;
+  top: 18%;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+}
+
+/* ── 和紙をのせる ── */
+.sumi-paper {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  background: rgba(245, 241, 232, 0.15);
+}
+
+.sumi-paper__sheet {
+  width: min(92vw, 920px);
+  height: min(86vh, 720px);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.35), transparent 40%),
+    #f7f3ea;
+  box-shadow:
+    0 20px 60px rgba(26, 26, 31, 0.18),
+    inset 0 0 0 1px rgba(26, 26, 31, 0.08);
+  display: grid;
+  place-items: center;
+  animation: paperLay 1.05s cubic-bezier(0.22, 0.9, 0.28, 1) forwards;
+  transform-origin: 50% 0%;
+}
+
+.sumi-paper__sheet span {
+  font-size: 13px;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  color: rgba(26, 26, 31, 0.45);
+}
+
+@keyframes paperLay {
+  0% {
+    opacity: 0;
+    transform: translateY(-18%) rotate(-2.5deg) scale(1.04);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(2%) rotate(0.6deg) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+/* ── 写した作品 + 落款 ── */
+.sumi-art {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  animation: artReveal 0.7s ease forwards;
+}
+
+.sumi-art__canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: crosshair;
+  display: block;
+}
+
+.sumi-game--done .sumi-art__canvas {
+  cursor: default;
+}
+
+.sumi-ghost-seal {
+  position: absolute;
+  aspect-ratio: 1;
+  background: #a4342c;
+  color: rgba(255, 248, 240, 0.95);
+  display: grid;
+  place-items: center;
+  font-size: clamp(14px, 2.2vw, 28px);
+  font-weight: 700;
+  border-radius: 4px;
+  opacity: 0.55;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  z-index: 5;
+}
+
+@keyframes artReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .sumi-title {
+    top: 20px;
+    left: 16px;
+  }
+  .sumi-back {
+    top: 18px;
+    right: 14px;
+    font-size: 11px;
+    padding: 0.45rem 0.9rem;
+  }
+  .sumi-dock {
+    gap: 12px;
+    padding: 10px 14px;
+    bottom: 16px;
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
+  }
+  .sumi-act {
+    font-size: 11px;
+  }
+}
